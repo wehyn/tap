@@ -9,6 +9,7 @@ usage() {
     print "  TAP_ACCEPTANCE_SENSITIVITY  low, medium, or high (default: high)"
     print "  TAP_ACCEPTANCE_DURATION     Seconds per run (default: 8)"
     print "  TAP_ACCEPTANCE_CALIBRATION  Quiet calibration seconds (default: 2)"
+    print "  TAP_ACCEPTANCE_LEAD_IN      Countdown seconds before each run (default: 5)"
     print ""
 }
 
@@ -29,6 +30,7 @@ esac
 SENSITIVITY="${TAP_ACCEPTANCE_SENSITIVITY:-high}"
 DURATION="${TAP_ACCEPTANCE_DURATION:-8}"
 CALIBRATION="${TAP_ACCEPTANCE_CALIBRATION:-2}"
+LEAD_IN="${TAP_ACCEPTANCE_LEAD_IN:-5}"
 if [[ -n "${TAP_ACCEPTANCE_DIR:-}" ]]; then
     OUTPUT_DIR="$TAP_ACCEPTANCE_DIR"
 else
@@ -44,8 +46,8 @@ case "$SENSITIVITY" in
         ;;
 esac
 
-if [[ ! "$DURATION" =~ '^[0-9]+([.][0-9]+)?$' || ! "$CALIBRATION" =~ '^[0-9]+([.][0-9]+)?$' ]]; then
-    print -u2 "TAP_ACCEPTANCE_DURATION and TAP_ACCEPTANCE_CALIBRATION must be non-negative numbers"
+if [[ ! "$DURATION" =~ '^[0-9]+([.][0-9]+)?$' || ! "$CALIBRATION" =~ '^[0-9]+([.][0-9]+)?$' || ! "$LEAD_IN" =~ '^[0-9]+$' ]]; then
+    print -u2 "TAP_ACCEPTANCE_DURATION and TAP_ACCEPTANCE_CALIBRATION must be non-negative numbers; TAP_ACCEPTANCE_LEAD_IN must be a non-negative integer"
     exit 2
 fi
 
@@ -59,7 +61,13 @@ mkdir -p "$OUTPUT_DIR/positive" "$OUTPUT_DIR/negative"
     print "sensitivity=$SENSITIVITY"
     print "duration_seconds=$DURATION"
     print "calibration_seconds=$CALIBRATION"
+    print "lead_in_seconds=$LEAD_IN"
 } > "$OUTPUT_DIR/metadata.txt"
+
+print "Building TapProbe before the interactive cases..."
+swift build --product TapProbe >/dev/null
+BIN_PATH="$(swift build --show-bin-path)"
+PROBE_BIN="$BIN_PATH/TapProbe"
 
 print "Acceptance captures will be written to: $OUTPUT_DIR"
 print "Hardware metadata excludes the Mac serial number."
@@ -79,7 +87,14 @@ capture_case() {
     print -n "Press Return to start, or Ctrl-C to stop: "
     read -r ignored_input
 
-    swift run --quiet TapProbe \
+    integer remaining=$LEAD_IN
+    while (( remaining > 0 )); do
+        print "Starting in ${remaining}s... keep the Mac still."
+        sleep 1
+        remaining=$(( remaining - 1 ))
+    done
+
+    "$PROBE_BIN" \
         --detect \
         --duration "$DURATION" \
         --calibrate "$CALIBRATION" \
