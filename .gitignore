@@ -1,0 +1,31 @@
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+
+# Xcode user and build state
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Local app and distribution artifacts
+dist/
+*.app/
+*.dSYM/
+*.dSYM.zip
+
+# Local environment and diagnostics
+.env
+.env.*
+!.env.example
+*.log
+*.trace
+*.jsonl
+*.swp
