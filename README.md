@@ -102,4 +102,5 @@ tools.
 See [`docs/TASKS.md`](docs/TASKS.md) for the current milestone and validation
 status, [`docs/PRD.md`](docs/PRD.md) for product requirements, and
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the sensor and process
-architecture.
+architecture. The repeatable hardware test procedure is in
+[`docs/ACCEPTANCE.md`](docs/ACCEPTANCE.md).

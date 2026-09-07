@@ -42,6 +42,7 @@
 - [x] Verify the reusable app reader non-root for three seconds: approximately 2,400 accelerometer and 2,400 gyroscope samples on the development MacBook Air.
 - [x] Add a local `Tap.app` bundle builder with `LSUIElement` and stable local development signing when an identity is available, with an ad-hoc fallback.
 - [x] Add an optional packaged-app launch-at-login setting through `SMAppService.mainApp`, including approval and unavailable states.
+- [x] Add a repeatable hardware-acceptance capture and replay-scoring workflow that keeps raw traces in `/tmp`.
 
 ## Next recognition work
 
